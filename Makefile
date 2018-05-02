@@ -1,5 +1,5 @@
 CLIENT = client.c start.c
-SERVER = server.c
+SERVER = server.c TicketBooth.c regist.c
 
 server:
 	gcc -Wall $(SERVER) -o server
@@ -11,7 +11,7 @@ debug server:
 	gcc -g -Wall $(SERVER) -o server
 
 debug client:
-	gcc -Wall $(SERVER) -o client
+	gcc -g -Wall $(SERVER) -o client
 
 
 clean server:
