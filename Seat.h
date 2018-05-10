@@ -5,6 +5,6 @@ typedef struct{
     int seatNum;
     int clientId;
     int reserved;
-} Seat
+} Seat;
 
 #endif
