@@ -1,5 +1,5 @@
-CLIENT = client.c 
-SERVER = server.c TicketBooth.c regist.c Seat.c
+CLIENT = client.c cregist.c
+SERVER = server.c TicketBooth.c sregist.c Seat.c
 
 server:
 	gcc -Wall $(SERVER) -o server
