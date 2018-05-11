@@ -28,3 +28,5 @@ int initFIFOs(){
   requests = open("requests",O_RDONLY);
   return 0;
 }
+
+
