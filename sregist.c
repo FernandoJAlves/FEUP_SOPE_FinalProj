@@ -18,6 +18,6 @@ void openFiles(){
 
 void BoothMsg(int boothNum,char * msg){
     char tmp[100];
-    sprintf(tmp,"%02d-%s",boothNum,msg);
+    sprintf(tmp,"%02d-%s\n",boothNum,msg);
     writeFile(tmp,slog);
 }

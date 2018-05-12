@@ -6,19 +6,19 @@
 #include <unistd.h>
 
 #include "request.h"
-#include "server.h"
+#include "macros.h"
 
-int ans;
 
-int initAnswers(int clientPid){
-    char path[100];
-    sprintf(path,"ans%05d",getpid());
-    ans = open(path,O_RDONLY);
-    return 0;
+
+int initAnswers(int clientPid,char * path){
+	int ans;
+    sprintf(path,"ans%05d",clientPid);
+    ans = open(path,O_WRONLY);
+    return ans;
 }
 
 int validate_request(Request r){
-
+	int seat_n;
 	if(!(r.num_wanted_seats >= 1 && r.num_wanted_seats <= MAX_CLI_SEATS)){
 		return -1;
 	}
@@ -29,7 +29,8 @@ int validate_request(Request r){
 	}
 
 	for(int i = 0; i < r.array_size; i++){
-		int seat_n = *(r.prefered_seats + i*sizeof(int)); //Não tenho a certeza se funciona!
+		//seat_n = *(r.prefered_seats + i*sizeof(int)); //Não tenho a certeza se funciona!
+		seat_n = r.prefered_seats[i];
 		if(!(seat_n >= 1 && seat_n <= MAX_CLI_SEATS)){
 			return -3;
 		}
@@ -38,13 +39,19 @@ int validate_request(Request r){
 	return 0;
 }
 
+void terminate(int ans, char * path){
+	close(ans);
+}
+
 
 int ticket_booth(){
+	char path[100];
+	int ans,clientPid;
+	ans = initAnswers(clientPid,path);
 
-	// "Recolher" um request
-	// Validar o request
+
 	
 
-
+	terminate(ans,path);
 	return 0;
 }

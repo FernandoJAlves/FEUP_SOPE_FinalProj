@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-int clog,cbook;
+int clientlog,cbook;
 
 void writeFile(char * msg, int fd){
     //TODO semaphore
@@ -10,6 +10,6 @@ void writeFile(char * msg, int fd){
 }
 
 void openFiles(){
-    clog=open("clog.txt",O_WRONLY|O_APPEND|O_CREAT,0644);
+    clientlog=open("clog.txt",O_WRONLY|O_APPEND|O_CREAT,0644);
     cbook=open("cbook.txt",O_WRONLY|O_APPEND|O_CREAT,0644);
 }

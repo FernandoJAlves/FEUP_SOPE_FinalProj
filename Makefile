@@ -1,11 +1,13 @@
 CLIENT = client.c cregist.c
 SERVER = server.c TicketBooth.c sregist.c Seat.c
 
+all: server client
+
 server:
-	gcc -Wall $(SERVER) -o server
+	gcc -Wall $(SERVER) -o server -lpthread
 
 client:
-	gcc -Wall $(CLIENT) -o client
+	gcc -Wall $(CLIENT) -o client -lpthread
 
 start:
 	gcc -Wall start.c -o start
@@ -17,8 +19,6 @@ debugc:
 	gcc -g -Wall $(SERVER) -o client
 
 
-cleans:
+clean:
 	rm server
-
-cleanc:
 	rm client
