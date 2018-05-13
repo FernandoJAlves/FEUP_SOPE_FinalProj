@@ -12,4 +12,6 @@ typedef struct{
 
 } Request;
 
+void initRequest(Request* req, int client_id, int num_wanted_seats, int* prefered_seats,int array_size);
+
 #endif

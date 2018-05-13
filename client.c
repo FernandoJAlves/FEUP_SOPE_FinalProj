@@ -8,12 +8,17 @@
 #include <time.h>
 
 #include "macros.h"
+#include "request.h"
 
 int requests;
 
-int initFIFOs(char * path);
+void initRequestsFIFO();
+int initAnswers(char * path);
 int readAnswer(int ans, int * Seats, int * listSize);
 void terminate(char * path, int ans);
+int * parseArray(int * actualSize, char * list);
+int sizeOfArray(char * list);
+void sendRequest(Request * r);
 
 int main(int argc, char *argv[]) {
   char path[100];
@@ -24,30 +29,44 @@ int main(int argc, char *argv[]) {
   if (argc == 4)
     printf("ARGS: %s | %s | %s\n", argv[1], argv[2], argv[3]);
 
-  
 
-  sleep(1);
-  ans = initFIFOs(path);
   int answerReceived = 0;
   int timeout = atoi(argv[1]);
-  int requestNum = argv[2];
-  int listSize;
-  char * list = argv[3];
+  int requestNum = atoi(argv[2]);
+  char * seatList = argv[3];
+  int answerSize;
+  int sizeList;
+  int * list = parseArray(&sizeList, seatList);
+  initRequestsFIFO();
+  
+  sleep(1);
+  
+  Request r;
+  initRequest(&r,getpid(),requestNum,list,sizeList);
+  sendRequest(&r);
+  ans = initAnswers(path);
+
+
+
 
   time_t start_time = time(NULL);
   while(timeout > difftime(time(NULL),start_time) && !answerReceived){
-  answerReceived = readAnswer(ans,seatsSelected,listSize);
+    answerReceived = readAnswer(ans,seatsSelected,&answerSize);
   }
   terminate(path, ans);
   return 0;
 }
 
-int initFIFOs(char * path){
+void initRequestsFIFO(){
   requests = open("requests",O_WRONLY | O_NONBLOCK);
   if(requests == -1){
     perror("Server not found");
     exit(1);
   }
+
+}
+
+int initAnswers(char * path){
   int ans;
   sprintf(path,"ans%05d",getpid());
   mkfifo(path,0660);
@@ -69,7 +88,7 @@ int readAnswer(int ans, int * seatsSelected, int * listSize){
     read(ans,&seatsSelected[i],sizeof(int));
   }
 
-  listSize = num;
+  *listSize = num;
   return 1;
 }
 
@@ -81,3 +100,39 @@ void terminate(char * path, int ans){
     printf("Error when destroying FIFO '%s0'\n",path);
 }
 
+int * parseArray(int * actualSize, char * list){
+  *actualSize = sizeOfArray(list);
+  int * data = (int*) malloc(sizeof(int)*(*actualSize));
+  
+  int count = 0;
+  char* end = list;
+  while(*end){
+    data[count] = strtol(list, &end,10);
+    while(*end == ' '){
+      end++;
+    }
+    list = end;
+    count++;
+  }
+  //printf("size: %d\n",*actualSize);
+  //printf("first ele: %d\n",data[0]);
+  return data;
+}
+
+int sizeOfArray(char * list){
+  char* end = list;
+  int counter = 0;
+  while(*end){
+    strtol(list, &end,10);
+    counter++;
+    while(*end == ' '){
+      end++;
+    }
+    list = end;
+  }
+  return counter;
+}
+
+void sendRequest(Request * r){
+  write(requests,r,sizeof(Request));
+}

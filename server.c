@@ -99,9 +99,11 @@ int isOpen(time_t start_time, int interval){
 
 void readFIFO(){
   sem_wait(&semRequest);
+  int n = 0;
   if(wasPicked){
-    read(requests,&buffer,sizeof(Request));
-    wasPicked = 0;
+    n = read(requests,&buffer,sizeof(Request));
+    if(n != 0)
+      wasPicked = 0;
   } 
   sem_post(&semRequest); 
 }

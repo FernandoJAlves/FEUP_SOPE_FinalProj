@@ -1,5 +1,5 @@
-CLIENT = client.c cregist.c
-SERVER = server.c TicketBooth.c sregist.c Seat.c
+CLIENT = client.c cregist.c request.c
+SERVER = server.c TicketBooth.c sregist.c Seat.c request.c
 
 all: server client
 

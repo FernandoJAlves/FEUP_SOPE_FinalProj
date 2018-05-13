@@ -60,23 +60,36 @@ Request getRequest(){
 	return req;
 }
 
+int reserveSeats(int * reservedSeats){
+	int counter = 0;
+	return counter;
+}
+
 void* ticket_booth(){
 	char path[100];
-	int ans,clientPid;
+	int ans,returnValue;
+	int reservedSeats[MAX_CLI_SEATS];
 
 	while(0/*!terminateServer*/){
 		//buscar request
 		Request req = getRequest();
+		
 
 		//tratar
-
+		returnValue = validate_request(req);
+		if(returnValue > 0){
+			returnValue = reserveSeats(reservedSeats);
+		}
+		
 		//enviar resposta
+		ans = initAnswers(req.client_id,path);
+		sendAnswer(ans,returnValue);
+		terminate(ans,path);
 	}
 
-	ans = initAnswers(clientPid,path);
+	
 
 	//sendAnswer(ans);
-	terminate(ans,path);
 	return NULL;
 }
 

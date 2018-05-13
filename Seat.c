@@ -1,4 +1,5 @@
 #include "Seat.h"
+#include <unistd.h>
 
 #define DELAY() sleep(1)
 
