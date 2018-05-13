@@ -107,7 +107,10 @@ void writeAnswer(int boothNum, Request *req, int ansNum, int *reservedSeats)
 void writeSeats(Seat * reservedSeats, int seatsNum){
     char temp[16];
     for(int i = 0; i < seatsNum; i++){
+      if(reservedSeats[i].reserved)
+      {
         sprintf(temp,"%0*d\n",WIDTH_SEAT,reservedSeats[i].seatNum);
         writeSbook(temp);
+      }
     }
 }
