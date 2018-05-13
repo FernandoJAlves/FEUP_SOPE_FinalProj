@@ -9,6 +9,7 @@
 
 #include "macros.h"
 #include "request.h"
+#include "cregist.h"
 
 int requests;
 
@@ -35,15 +36,16 @@ int main(int argc, char *argv[]) {
   int requestNum = atoi(argv[2]);
   char * seatList = argv[3];
   int answerSize;
-  
+
   initRequestsFIFO();
-  
+  openFiles();
+
   sleep(1);
-  
+
   Request r;
   initRequest(&r,getpid(),requestNum);
   parseArray(&r.array_size, seatList,r.prefered_seats);
-  
+
   sendRequest(&r);
   ans = initAnswers(path);
 
@@ -53,8 +55,10 @@ int main(int argc, char *argv[]) {
   time_t start_time = time(NULL);
   while(timeout > difftime(time(NULL),start_time) && !answerReceived){
     answerReceived = readAnswer(ans,seatsSelected,&answerSize);
-    
+
   }
+  writeSeats(seatsSelected,MAX_CLI_SEATS);
+  closeFiles();
   terminate(path, ans);
   return 0;
 }
@@ -79,7 +83,7 @@ int initAnswers(char * path){
 int readAnswer(int ans, int * seatsSelected, int * listSize){
   int num;
   int aux = read(ans,&num,sizeof(int));
-  
+
   if(aux <= 0){
     return 0;
   }
@@ -94,7 +98,7 @@ int readAnswer(int ans, int * seatsSelected, int * listSize){
     read(ans,&(seatsSelected[i]),sizeof(int));
     printf("received: %d\n", seatsSelected[i]);
   }
-  
+
   return 1;
 }
 
@@ -105,13 +109,13 @@ void terminate(char * path, int ans){
   if(unlink(path)<0)
     printf("Error when destroying FIFO '%s0'\n",path);
   unlink("requests");
-    
+
 }
 
 void parseArray(int * actualSize, char * stringList, int * data){
   *actualSize = sizeOfArray(stringList);
   //int * data = (int*) malloc(sizeof(int)*(*actualSize));
-  
+
   int count = 0;
   char* end = stringList;
   while(*end){
