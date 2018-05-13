@@ -6,5 +6,6 @@
 sem_t * getSemaphore();
 Request * getReqBuffer();
 int * getWasPicked();
+int getTerminateServer();
 
 #endif

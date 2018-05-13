@@ -16,7 +16,7 @@ void initRequestsFIFO();
 int initAnswers(char * path);
 int readAnswer(int ans, int * Seats, int * listSize);
 void terminate(char * path, int ans);
-int * parseArray(int * actualSize, char * list);
+void parseArray(int * actualSize, char * stringList, int * data);
 int sizeOfArray(char * list);
 void sendRequest(Request * r);
 
@@ -36,13 +36,14 @@ int main(int argc, char *argv[]) {
   char * seatList = argv[3];
   int answerSize;
   int sizeList;
-  int * list = parseArray(&sizeList, seatList);
+  
   initRequestsFIFO();
   
   sleep(1);
   
   Request r;
-  initRequest(&r,getpid(),requestNum,list,sizeList);
+  initRequest(&r,getpid(),requestNum,sizeList);
+  parseArray(&sizeList, seatList,r.prefered_seats);
   sendRequest(&r);
   ans = initAnswers(path);
 
@@ -52,6 +53,7 @@ int main(int argc, char *argv[]) {
   time_t start_time = time(NULL);
   while(timeout > difftime(time(NULL),start_time) && !answerReceived){
     answerReceived = readAnswer(ans,seatsSelected,&answerSize);
+    
   }
   terminate(path, ans);
   return 0;
@@ -77,6 +79,7 @@ int initAnswers(char * path){
 int readAnswer(int ans, int * seatsSelected, int * listSize){
   int num;
   int aux = read(ans,&num,sizeof(int));
+  
   if(aux == 0){
     return 0;
   }
@@ -100,23 +103,22 @@ void terminate(char * path, int ans){
     printf("Error when destroying FIFO '%s0'\n",path);
 }
 
-int * parseArray(int * actualSize, char * list){
-  *actualSize = sizeOfArray(list);
-  int * data = (int*) malloc(sizeof(int)*(*actualSize));
+void parseArray(int * actualSize, char * stringList, int * data){
+  *actualSize = sizeOfArray(stringList);
+  //int * data = (int*) malloc(sizeof(int)*(*actualSize));
   
   int count = 0;
-  char* end = list;
+  char* end = stringList;
   while(*end){
-    data[count] = strtol(list, &end,10);
+    data[count] = strtol(stringList, &end,10);
     while(*end == ' '){
       end++;
     }
-    list = end;
+    stringList = end;
     count++;
   }
   //printf("size: %d\n",*actualSize);
   //printf("first ele: %d\n",data[0]);
-  return data;
 }
 
 int sizeOfArray(char * list){

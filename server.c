@@ -37,7 +37,6 @@ int main(int argc, char *argv[]) {
   else {
     exit(0);
   }
-  printf("1\n");
   int num_room_seats = atoi(argv[1]);
   int num_ticket_offices = atoi(argv[2]);
   int open_time = atoi(argv[3]);
@@ -54,7 +53,7 @@ int main(int argc, char *argv[]) {
   while(isOpen(start_time, open_time)){
     readFIFO();
   }
-
+  terminateServer = 1;
   printf("The server will close.\nThank You for using our services.\n");
   return 0;
 }
@@ -62,9 +61,7 @@ int main(int argc, char *argv[]) {
 
 int initFIFOs(){
   mkfifo("requests",0660);
-  printf("2\n");
   requests = open("requests",O_RDONLY | O_NONBLOCK);
-  printf("3\n");
   return 0;
 }
 
@@ -102,8 +99,9 @@ void readFIFO(){
   int n = 0;
   if(wasPicked){
     n = read(requests,&buffer,sizeof(Request));
-    if(n != 0)
+    if(n > 0){
       wasPicked = 0;
+    }
   } 
   sem_post(&semRequest); 
 }
@@ -118,4 +116,8 @@ Request * getReqBuffer(){
 
 int * getWasPicked(){
   return &wasPicked;
+}
+
+int getTerminateServer(){
+  return terminateServer;
 }
