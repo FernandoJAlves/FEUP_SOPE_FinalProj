@@ -14,6 +14,6 @@ typedef struct{
 
 } Request;
 
-void initRequest(Request* req, int client_id, int num_wanted_seats,int array_size);
+void initRequest(Request* req, int client_id, int num_wanted_seats);
 
 #endif

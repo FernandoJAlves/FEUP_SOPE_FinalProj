@@ -6,22 +6,22 @@
 int seat_count = 1;
 
 int isSeatFree(Seat *seats, int seatNum){
+    sem_wait(&(seats[seatNum-1].sem_seat));
     DELAY();
-    return !(seats[seatNum-1].reserved);   
+    int temp = !(seats[seatNum-1].reserved);
+    return temp;
 }
 
 void bookSeat(Seat *seats, int seatNum, int clientId){
-    DELAY();
     seats[seatNum-1].reserved = 1;
     seats[seatNum-1].clientId = clientId;
-    
+    DELAY();
 }
 
 void freeSeat(Seat *seats, int seatNum){
-    DELAY();
     seats[seatNum-1].reserved = 0;
     seats[seatNum-1].clientId = 0;
-    
+    DELAY();
 }
 
 void initSeat(Seat* s){

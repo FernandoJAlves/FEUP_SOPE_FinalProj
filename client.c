@@ -35,15 +35,15 @@ int main(int argc, char *argv[]) {
   int requestNum = atoi(argv[2]);
   char * seatList = argv[3];
   int answerSize;
-  int sizeList;
   
   initRequestsFIFO();
   
   sleep(1);
   
   Request r;
-  initRequest(&r,getpid(),requestNum,sizeList);
-  parseArray(&sizeList, seatList,r.prefered_seats);
+  initRequest(&r,getpid(),requestNum);
+  parseArray(&r.array_size, seatList,r.prefered_seats);
+  
   sendRequest(&r);
   ans = initAnswers(path);
 
@@ -80,18 +80,21 @@ int readAnswer(int ans, int * seatsSelected, int * listSize){
   int num;
   int aux = read(ans,&num,sizeof(int));
   
-  if(aux == 0){
+  if(aux <= 0){
     return 0;
   }
   if(num < 0){
     return num;
   }
 
-  for(int i = 0; i < num;i++){
-    read(ans,&seatsSelected[i],sizeof(int));
-  }
-
   *listSize = num;
+  printf("size: %d\n", num);
+
+  for(int i = 0; i < num;i++){
+    read(ans,&(seatsSelected[i]),sizeof(int));
+    printf("received: %d\n", seatsSelected[i]);
+  }
+  
   return 1;
 }
 
@@ -101,6 +104,8 @@ void terminate(char * path, int ans){
 
   if(unlink(path)<0)
     printf("Error when destroying FIFO '%s0'\n",path);
+  unlink("requests");
+    
 }
 
 void parseArray(int * actualSize, char * stringList, int * data){

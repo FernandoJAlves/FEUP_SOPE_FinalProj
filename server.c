@@ -11,7 +11,6 @@
 
 #include "server.h"
 #include "TicketBooth.h"
-#include "Seat.h"
 
 int requests;
 int wasPicked = 1; // 0 if wasn't picked, otherwise 1
@@ -27,6 +26,7 @@ int initFIFOs();
 int initSemaphores();
 int initAllSeats(int n_seats);
 int initTicketBooths(int n_bilheteiras);
+void terminateFIFOs();
 
 int main(int argc, char *argv[]) {
   printf("** Running Server **\n");
@@ -53,7 +53,12 @@ int main(int argc, char *argv[]) {
   while(isOpen(start_time, open_time)){
     readFIFO();
   }
+  terminateFIFOs();
   terminateServer = 1;
+  for(int i = 0; i < num_ticket_offices;i++){
+    pthread_join(threadArray[i], NULL);
+  }
+
   printf("The server will close.\nThank You for using our services.\n");
   return 0;
 }
@@ -106,6 +111,11 @@ void readFIFO(){
   sem_post(&semRequest); 
 }
 
+void terminateFIFOs(){
+  close(requests);
+  unlink("requests");
+}
+
 sem_t * getSemaphore(){
   return &semRequest;
 }
@@ -121,3 +131,8 @@ int * getWasPicked(){
 int getTerminateServer(){
   return terminateServer;
 }
+
+Seat* getSeatsArray(){
+  return seatsArray;
+}
+
