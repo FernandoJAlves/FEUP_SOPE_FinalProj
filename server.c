@@ -11,6 +11,7 @@
 
 #include "server.h"
 #include "TicketBooth.h"
+#include "sregist.h"
 
 int requests;
 int wasPicked = 1; // 0 if wasn't picked, otherwise 1
@@ -46,6 +47,7 @@ int main(int argc, char *argv[]) {
   initFIFOs();
   initSemaphores();
   initAllSeats(num_room_seats);
+  openFiles();
   initTicketBooths(num_ticket_offices);
 
   time_t start_time = time(NULL);
@@ -59,6 +61,10 @@ int main(int argc, char *argv[]) {
     pthread_join(threadArray[i], NULL);
   }
 
+  
+  writeSlog("SERVER CLOSED");
+  writeSeats(seatsArray,num_room_seats);
+  closeFiles();
   printf("The server will close.\nThank You for using our services.\n");
   return 0;
 }
@@ -85,8 +91,10 @@ int initAllSeats(int n_seats){
 
 int initTicketBooths(int n_bilheteiras){
   threadArray = (pthread_t*) malloc(sizeof(pthread_t) * n_bilheteiras);
+  int * boothNums = (int*)malloc(sizeof(int)*n_bilheteiras); 
   for(int i = 0; i < n_bilheteiras; i++){
-    pthread_create(&(threadArray[i]),NULL,ticket_booth,NULL);
+    boothNums[i] = i+1;
+    pthread_create(&(threadArray[i]),NULL,ticket_booth,&boothNums[i]);
   }
   return 0;
 }

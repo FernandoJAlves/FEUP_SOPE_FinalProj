@@ -10,6 +10,7 @@
 #include "macros.h"
 #include "server.h"
 #include "Seat.h"
+#include "sregist.h"
 
 int initAnswers(int clientPid,char * path){
 	int ans;
@@ -108,12 +109,13 @@ int reserveSeats(int * reservedSeats, Request req){
 	return 0;
 }
 
-void* ticket_booth(){
+void* ticket_booth(void * arg){
 	char path[100];
+	int boothNum = *((int*)arg);
 	int ans,returnValue;
 	int reservedSeats[MAX_CLI_SEATS];
 	Request * req = NULL;
-
+	boothMsg(boothNum,"OPEN");
 	while(!getTerminateServer()){
 		//buscar request
 		
@@ -130,8 +132,8 @@ void* ticket_booth(){
 			returnValue = reserveSeats(reservedSeats, *req);
 			printf("fine: %d\n",returnValue);
 		}
-		
 
+		writeAnswer(boothNum,req,returnValue,reservedSeats);
 
 		//enviar resposta
 		ans = initAnswers(req->client_id,path);
@@ -150,7 +152,7 @@ void* ticket_booth(){
 
 	
 
-	//sendAnswer(ans);
+	boothMsg(boothNum,"CLOSED");
 	return NULL;
 }
 
