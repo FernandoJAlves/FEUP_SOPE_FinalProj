@@ -4,11 +4,10 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <semaphore.h>
 
-#include "request.h"
 #include "macros.h"
-
-
+#include "server.h"
 
 int initAnswers(int clientPid,char * path){
 	int ans;
@@ -29,7 +28,6 @@ int validate_request(Request r){
 	}
 
 	for(int i = 0; i < r.array_size; i++){
-		//seat_n = *(r.prefered_seats + i*sizeof(int)); //Não tenho a certeza se funciona!
 		seat_n = r.prefered_seats[i];
 		if(!(seat_n >= 1 && seat_n <= MAX_CLI_SEATS)){
 			return -3;
@@ -43,15 +41,42 @@ void terminate(int ans, char * path){
 	close(ans);
 }
 
+void sendAnswer(int ans,int num){
+	write(ans,&num,sizeof(int));
+}
 
-int ticket_booth(){
+Request getRequest(){
+	sem_t * semReq = getSemaphore();
+	Request req;
+	
+	sem_wait(semReq);
+	int * picked = getWasPicked();
+	if(!(*picked)){
+		Request * pedido = getReqBuffer();
+		req = *pedido;
+		*picked = 1;
+	}
+	sem_post(semReq);
+	return req;
+}
+
+void* ticket_booth(){
 	char path[100];
 	int ans,clientPid;
+
+	while(0/*!terminateServer*/){
+		//buscar request
+		Request req = getRequest();
+
+		//tratar
+
+		//enviar resposta
+	}
+
 	ans = initAnswers(clientPid,path);
 
-
-	
-
+	//sendAnswer(ans);
 	terminate(ans,path);
-	return 0;
+	return NULL;
 }
+
