@@ -71,8 +71,6 @@ int reserveSeats(int * reservedSeats, Request req){
 	int current_res_counter = 0;
 
 	int * toFreeArray = (int*) malloc(sizeof(int)*req.array_size);
-
-	//
 	
 	for(int i = 0; i < req.array_size; i++){
 
@@ -85,6 +83,7 @@ int reserveSeats(int * reservedSeats, Request req){
 		}
 		else{
 			toFreeArray[i] = 0;
+			sem_post(&(arraySeats[req.prefered_seats[i]-1].sem_seat));
 		}
 
 
@@ -102,8 +101,8 @@ int reserveSeats(int * reservedSeats, Request req){
 	for(int i = 0; i < req.array_size; i++){
 		if(toFreeArray[i]){
 			freeSeat(arraySeats, req.prefered_seats[i]);
+			sem_post(&(arraySeats[req.prefered_seats[i]-1].sem_seat));
 		}
-		sem_post(&(arraySeats[req.prefered_seats[i]-1].sem_seat));
 	}
 
 	return 0;
@@ -117,20 +116,22 @@ void* ticket_booth(void * arg){
 	Request * req = NULL;
 	boothMsg(boothNum,"OPEN");
 	while(!getTerminateServer()){
+
 		//buscar request
-		
 		
 		req = getRequest();
 		
 		if(req == NULL)
 			continue;
 
-		
 		//tratar
 		returnValue = validate_request(*req);
 		if(returnValue == 0){
 			returnValue = reserveSeats(reservedSeats, *req);
-			printf("fine: %d\n",returnValue);
+			printf("final size: %d\n",returnValue);
+		}
+		else{
+			printf("error: %d\n",returnValue);
 		}
 
 		writeAnswer(boothNum,req,returnValue,reservedSeats);
@@ -145,14 +146,12 @@ void* ticket_booth(void * arg){
 			}
 		}
 
-
 		terminate(ans,path);
 		
 	}
 
-	
-
 	boothMsg(boothNum,"CLOSED");
+
 	return NULL;
 }
 

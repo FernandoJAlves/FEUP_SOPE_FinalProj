@@ -47,9 +47,6 @@ int main(int argc, char *argv[]) {
   sendRequest(&r);
   ans = initAnswers(path);
 
-
-
-
   time_t start_time = time(NULL);
   while(timeout > difftime(time(NULL),start_time) && !answerReceived){
     answerReceived = readAnswer(ans,seatsSelected,&answerSize);
@@ -84,15 +81,24 @@ int readAnswer(int ans, int * seatsSelected, int * listSize){
     return 0;
   }
   if(num < 0){
+    printf("error: %d\n", num);
     return num;
   }
 
   *listSize = num;
   printf("size: %d\n", num);
 
+  int n;
+
   for(int i = 0; i < num;i++){
-    read(ans,&(seatsSelected[i]),sizeof(int));
-    printf("received: %d\n", seatsSelected[i]);
+    n = read(ans,&(seatsSelected[i]),sizeof(int));
+    if(n <= 0){
+      i--;
+    }
+    else{
+      printf("received: %d\n", seatsSelected[i]);
+    }
+
   }
   
   return 1;

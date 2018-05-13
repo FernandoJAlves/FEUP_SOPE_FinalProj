@@ -42,26 +42,26 @@ int main(int argc, char *argv[]) {
   int num_ticket_offices = atoi(argv[2]);
   int open_time = atoi(argv[3]);
 
+  initFIFOs();
+
   sleep(1);
   
-  initFIFOs();
   initSemaphores();
   initAllSeats(num_room_seats);
   openFiles();
   initTicketBooths(num_ticket_offices);
-
   time_t start_time = time(NULL);
 
   while(isOpen(start_time, open_time)){
     readFIFO();
   }
+  
   terminateFIFOs();
   terminateServer = 1;
   for(int i = 0; i < num_ticket_offices;i++){
     pthread_join(threadArray[i], NULL);
   }
 
-  
   writeSlog("SERVER CLOSED");
   writeSeats(seatsArray,num_room_seats);
   closeFiles();
