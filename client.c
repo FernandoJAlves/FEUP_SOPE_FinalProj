@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     answerReceived = readAnswer(ans,seatsSelected,&answerSize);
 
   }
-  writeSeats(seatsSelected,MAX_CLI_SEATS);
+  writeSeats(seatsSelected,answerSize);
   closeFiles();
   terminate(path, ans);
   return 0;

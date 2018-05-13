@@ -8,7 +8,6 @@
 int clientlog,cbook;
 
 void writeFile(char * msg, int fd){
-    //TODO semaphore
     write(fd,msg,strlen(msg));
 }
 
@@ -35,9 +34,12 @@ void closeFiles()
 }
 
 
-void writeSeats(int *seatsReserved, int seatsNum){
+void writeSeats(int *seatsReserved, int ansNum){
     char temp[16];
-    for(int i = 0; i < seatsNum; i++){
+    if(ansNum < 0){
+        return;
+    }
+    for(int i = 0; i < ansNum; i++){
       if(seatsReserved[i] == 0)
         break;
 
