@@ -102,16 +102,19 @@ int initAnswers(char * path){
 int readAnswer(int ans, int * seatsSelected, int * listSize){
   int num;
   int aux = read(ans,&num,sizeof(int));
+  
 
   if(aux <= 0){
     return 0;
   }
   if(num < 0){
     printf("error: %d\n", num);
+    *listSize = num;
     return num;
   }
 
   *listSize = num;
+
   printf("size: %d\n", num);
 
   int n;
