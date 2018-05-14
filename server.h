@@ -9,5 +9,6 @@ Request * getReqBuffer();
 int * getWasPicked();
 int getTerminateServer();
 Seat* getSeatsArray();
+int getSeatsArraySize();
 
 #endif

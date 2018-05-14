@@ -18,6 +18,7 @@ int wasPicked = 1; // 0 if wasn't picked, otherwise 1
 sem_t semRequest;
 Request buffer[1];
 Seat* seatsArray;
+int seatsArraySize;
 pthread_t * threadArray;
 int terminateServer = 0; // 0 if continue, otherwise 1
 
@@ -48,6 +49,7 @@ int main(int argc, char *argv[]) {
   
   initSemaphores();
   initAllSeats(num_room_seats);
+  seatsArraySize = num_room_seats;
   openFiles();
   initTicketBooths(num_ticket_offices);
   time_t start_time = time(NULL);
@@ -144,3 +146,6 @@ Seat* getSeatsArray(){
   return seatsArray;
 }
 
+int getSeatsArraySize(){
+  return seatsArraySize;
+}

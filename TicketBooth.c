@@ -105,7 +105,13 @@ int reserveSeats(int * reservedSeats, Request req){
 		}
 	}
 
-	return 0;
+	for(int i = 0; i < getSeatsArraySize();i++){
+		if(!arraySeats[i].reserved){
+			return -5;
+		}
+	}
+
+	return -6;	
 }
 
 void* ticket_booth(void * arg){
