@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
 
   }
   writeSeats(seatsSelected,answerSize);
+  writeReservations(getpid(),seatsSelected,answerSize);
   closeFiles();
   terminate(path, ans);
   return 0;

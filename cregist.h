@@ -5,7 +5,7 @@
 //void boothMsg(int boothNum,char * msg);
 void writeClog(char * msg);
 void writeCbook(char *msg);
-//void writeAnswer(int boothNum, Request * req, int ansNum, int * reservedSeats);
+void writeReservations(int clientId, int * seatsReserved, int ansNum);
 void writeSeats(int *seatsReserved, int seatsNum);
 void openFiles();
 void closeFiles();

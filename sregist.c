@@ -47,11 +47,11 @@ void boothMsg(int boothNum, char *msg)
 
 void writeAnswer(int boothNum, Request *req, int ansNum, int *reservedSeats)
 {
-    char temp[512];
+    char temp[1024];
     char aux[32];
     sprintf(temp, "%05d-%02d: ", req->client_id, req->num_wanted_seats);
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < MAX_CLI_SEATS; i++)
     {
 
         if (i < req->array_size)
