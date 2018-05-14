@@ -1,9 +1,8 @@
 #include "request.h"
 
-void initRequest(Request* req, int client_id, int num_wanted_seats){
+void initRequest(Request* req, int client_id){
     req->client_id = client_id;
-    req->num_wanted_seats = num_wanted_seats;
-
+    req->error = 0;
 }
 
 

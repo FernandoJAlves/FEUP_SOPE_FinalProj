@@ -7,7 +7,8 @@ typedef struct{
     int seatNum;
     int clientId;
     int reserved;
-    sem_t sem_seat;
+    int waiting;
+    //sem_t sem_seat;
 } Seat;
 
 void initSeat(Seat* s);

@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <time.h>
+#include <ctype.h>
 
 #include "macros.h"
 #include "request.h"
@@ -20,6 +21,7 @@ void terminate(char * path, int ans);
 void parseArray(int * actualSize, char * stringList, int * data);
 int sizeOfArray(char * list);
 void sendRequest(Request * r);
+int isNumber(char * n);
 
 int main(int argc, char *argv[]) {
   char path[100];
@@ -32,8 +34,29 @@ int main(int argc, char *argv[]) {
 
 
   int answerReceived = 0;
-  int timeout = atoi(argv[1]);
-  int requestNum = atoi(argv[2]);
+
+  int timeout = 30; //default value
+  int requestNum;
+
+  Request r;
+  initRequest(&r,getpid());
+  
+  if(isNumber(argv[1])){
+    timeout = atoi(argv[1]);
+  }
+  else{
+    r.error = 1;
+  }
+
+  if(isNumber(argv[2])){
+    requestNum = atoi(argv[2]);
+  }
+  else{
+    r.error = 1;
+  }
+
+  r.num_wanted_seats = requestNum;
+  
   char * seatList = argv[3];
   int answerSize;
 
@@ -42,8 +65,6 @@ int main(int argc, char *argv[]) {
 
   sleep(1);
 
-  Request r;
-  initRequest(&r,getpid(),requestNum);
   parseArray(&r.array_size, seatList,r.prefered_seats);
 
   sendRequest(&r);
@@ -153,4 +174,13 @@ int sizeOfArray(char * list){
 
 void sendRequest(Request * r){
   write(requests,r,sizeof(Request));
+}
+
+int isNumber(char * str){
+  for(char *c = str; *c != '\0'; c++){
+    if(!isdigit(*c)){
+      return 0;
+    }
+  }
+  return 1;
 }

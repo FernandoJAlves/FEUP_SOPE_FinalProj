@@ -16,6 +16,7 @@
 int requests;
 int wasPicked = 1; // 0 if wasn't picked, otherwise 1
 sem_t semRequest;
+sem_t semMakeFullRes;
 Request buffer[1];
 Seat* seatsArray;
 int seatsArraySize;
@@ -80,6 +81,7 @@ int initFIFOs(){
 
 int initSemaphores(){
   sem_init(&semRequest,0,1);
+  sem_init(&semMakeFullRes,0,1);
   return 0;
 }
 
@@ -128,6 +130,10 @@ void terminateFIFOs(){
 
 sem_t * getSemaphore(){
   return &semRequest;
+}
+
+sem_t * getReservationSem(){
+  return &semMakeFullRes;
 }
 
 Request * getReqBuffer(){

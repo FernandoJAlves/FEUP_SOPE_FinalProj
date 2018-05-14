@@ -5,6 +5,7 @@
 #include "Seat.h"
 
 sem_t * getSemaphore();
+sem_t * getReservationSem();
 Request * getReqBuffer();
 int * getWasPicked();
 int getTerminateServer();

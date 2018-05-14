@@ -21,6 +21,11 @@ int initAnswers(int clientPid,char * path){
 
 int validate_request(Request r){
 	int seat_n;
+
+	if(r.error){
+		return -4;
+	}
+
 	if(!(r.num_wanted_seats >= 1 && r.num_wanted_seats <= MAX_CLI_SEATS)){
 		return -1;
 	}
@@ -67,6 +72,9 @@ Request * getRequest(){
 int reserveSeats(int * reservedSeats, Request req){
 
 	Seat * arraySeats = getSeatsArray();
+	sem_t * semAccess = getReservationSem();
+
+	sem_wait(semAccess);
 
 	int current_res_counter = 0;
 
@@ -83,14 +91,11 @@ int reserveSeats(int * reservedSeats, Request req){
 		}
 		else{
 			toFreeArray[i] = 0;
-			sem_post(&(arraySeats[req.prefered_seats[i]-1].sem_seat));
 		}
 
 
 		if(current_res_counter == req.num_wanted_seats){
-			for(int j = 0; j <= i; j++){
-				sem_post(&(arraySeats[req.prefered_seats[j]-1].sem_seat));
-			}
+			sem_post(semAccess);
 			return current_res_counter;
 		}
 
@@ -101,16 +106,17 @@ int reserveSeats(int * reservedSeats, Request req){
 	for(int i = 0; i < req.array_size; i++){
 		if(toFreeArray[i]){
 			freeSeat(arraySeats, req.prefered_seats[i]);
-			sem_post(&(arraySeats[req.prefered_seats[i]-1].sem_seat));
 		}
 	}
 
 	for(int i = 0; i < getSeatsArraySize();i++){
 		if(!arraySeats[i].reserved){
+			sem_post(semAccess);
 			return -5;
 		}
 	}
 
+	sem_post(semAccess);
 	return -6;	
 }
 

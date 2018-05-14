@@ -9,11 +9,11 @@ typedef struct{
     int prefered_seats[MAX_CLI_SEATS];
     int array_size;
 
-    //TODO
+    int error;
 
 
 } Request;
 
-void initRequest(Request* req, int client_id, int num_wanted_seats);
+void initRequest(Request* req, int client_id);
 
 #endif
