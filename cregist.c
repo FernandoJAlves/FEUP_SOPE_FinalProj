@@ -23,8 +23,8 @@ void writeCbook(char *msg)
 }
 
 void openFiles(){
-    clientlog=open("clog.txt",O_WRONLY|O_TRUNC|O_CREAT,0644);
-    cbook=open("cbook.txt",O_WRONLY|O_TRUNC|O_CREAT,0644);
+    clientlog=open("clog.txt",O_WRONLY|O_APPEND|O_CREAT,0644);
+    cbook=open("cbook.txt",O_WRONLY|O_APPEND|O_CREAT,0644);
 }
 
 void closeFiles()
@@ -57,32 +57,32 @@ void writeReservations(int clientId, int * seatsReserved, int ansNum){
     switch (ansNum)
     {
     case -1:
-        strcat(temp, "MAX");
+        strcat(temp, "MAX\n");
         writeClog(temp); 
         break;
 
     case -2:
-        strcat(temp, "NST");
+        strcat(temp, "NST\n");
         writeClog(temp); 
         break;
 
     case -3:
-        strcat(temp, "IID");
+        strcat(temp, "IID\n");
         writeClog(temp); 
         break;
 
     case -4:
-        strcat(temp, "ERR");
+        strcat(temp, "ERR\n");
         writeClog(temp); 
         break;
 
     case -5:
-        strcat(temp, "NAV");
+        strcat(temp, "NAV\n");
         writeClog(temp); 
         break;
 
     case -6:
-        strcat(temp, "FUL");
+        strcat(temp, "FUL\n");
         writeClog(temp); 
         break;
 

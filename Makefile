@@ -9,9 +9,6 @@ server:
 client:
 	gcc -Wall $(CLIENT) -o client -lpthread
 
-start:
-	gcc -Wall start.c -o start
-
 debugs:
 	gcc -g -Wall $(SERVER) -o server
 

@@ -62,19 +62,21 @@ int main(int argc, char *argv[]) {
 
   initRequestsFIFO();
   openFiles();
+  ans = initAnswers(path);
 
   sleep(1);
 
   parseArray(&r.array_size, seatList,r.prefered_seats);
 
   sendRequest(&r);
-  ans = initAnswers(path);
+
 
   time_t start_time = time(NULL);
   while(timeout > difftime(time(NULL),start_time) && !answerReceived){
     answerReceived = readAnswer(ans,seatsSelected,&answerSize);
 
   }
+  //printf("answerSize: %d\n", answerSize);
   writeSeats(seatsSelected,answerSize);
   writeReservations(getpid(),seatsSelected,answerSize);
   closeFiles();
@@ -83,11 +85,20 @@ int main(int argc, char *argv[]) {
 }
 
 void initRequestsFIFO(){
-  requests = open("requests",O_WRONLY | O_NONBLOCK);
+  requests = open("requests",O_WRONLY /*| O_NONBLOCK*/);
   if(requests == -1){
     perror("Server not found");
     exit(1);
   }
+/*
+  for(int i = 0; i < 10; i++){
+    sleep(1);
+    requests = open("requests",O_WRONLY | O_NONBLOCK);
+    if(requests >= 0){
+      return;
+    }
+  }
+*/
 
 }
 
@@ -108,14 +119,14 @@ int readAnswer(int ans, int * seatsSelected, int * listSize){
     return 0;
   }
   if(num < 0){
-    printf("error: %d\n", num);
+    //printf("error: %d\n", num);
     *listSize = num;
     return num;
   }
 
   *listSize = num;
 
-  printf("size: %d\n", num);
+  //printf("size: %d\n", num);
 
   int n;
 
@@ -123,9 +134,6 @@ int readAnswer(int ans, int * seatsSelected, int * listSize){
     n = read(ans,&(seatsSelected[i]),sizeof(int));
     if(n <= 0){
       i--;
-    }
-    else{
-      printf("received: %d\n", seatsSelected[i]);
     }
 
   }

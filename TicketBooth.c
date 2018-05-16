@@ -64,7 +64,7 @@ Request * getRequest(){
 			
 		*picked = 1;
 	}
-	sem_post(semReq);
+	
 
 	return req;
 }
@@ -125,38 +125,45 @@ void* ticket_booth(void * arg){
 	int boothNum = *((int*)arg);
 	int ans,returnValue;
 	int reservedSeats[MAX_CLI_SEATS];
-	Request * req = NULL;
+	Request * r_old = NULL;
 	boothMsg(boothNum,"OPEN");
 	while(!getTerminateServer()){
 
 		//buscar request
 		
-		req = getRequest();
+		r_old = getRequest();
 		
-		if(req == NULL)
+		if(r_old == NULL){
+			sem_post(getSemaphore());
 			continue;
+		}
+
+		Request req = *r_old;
+		sem_post(getSemaphore());
+
 
 		//tratar
-		returnValue = validate_request(*req);
+		returnValue = validate_request(req);
 		if(returnValue == 0){
-			returnValue = reserveSeats(reservedSeats, *req);
-			printf("final size: %d\n",returnValue);
-		}
-		else{
-			printf("error: %d\n",returnValue);
+			returnValue = reserveSeats(reservedSeats, req);
+			//printf("final size: %d\n",returnValue);
 		}
 
-		writeAnswer(boothNum,req,returnValue,reservedSeats);
+		writeAnswer(boothNum,&req,returnValue,reservedSeats);
 
 		//enviar resposta
-		ans = initAnswers(req->client_id,path);
+		ans = initAnswers(req.client_id,path);
+		
 		sendAnswer(ans,returnValue);
+
 		if(returnValue > 0){
 			for(int i = 0; i < returnValue; i++){
 				sendAnswer(ans,reservedSeats[i]);
-				printf("sent: %d\n",reservedSeats[i]);
+				//printf("sent: %d\n",reservedSeats[i]);
 			}
 		}
+
+	
 
 		terminate(ans,path);
 		
